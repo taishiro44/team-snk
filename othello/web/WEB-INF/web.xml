@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-	 version="3.1">
-    
+<web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <servlet>
-        <servlet-name>helloworld</servlet-name>
-        <servlet-class>HelloWorld</servlet-class>
+        <servlet-name>register</servlet-name>
+        <servlet-class>views.Register</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>helloworld</servlet-name>
-        <url-pattern>/helloworld</url-pattern>
+        <servlet-name>register</servlet-name>
+        <url-pattern>/accounts/register</url-pattern>
     </servlet-mapping>
     
-    <session-config>
-        <session-timeout>
-            30
-        </session-timeout>
-    </session-config>
+    <servlet>
+        <servlet-name>login</servlet-name>
+        <servlet-class>views.Login</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>login</servlet-name>
+        <url-pattern>/accounts/login</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>lobby</servlet-name>
+        <servlet-class>views.Lobby</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>lobby</servlet-name>
+        <url-pattern>/game/lobby</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>room</servlet-name>
+        <servlet-class>views.Room</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>room</servlet-name>
+        <url-pattern>/game/lobby/makeRoom</url-pattern>
+    </servlet-mapping>
+    
 </web-app>

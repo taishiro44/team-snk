@@ -11,9 +11,9 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <div>TODO write content</div>
-        
-        <a href="/WEB-INF/accounts/login.html">login</a><br />
-        <a href="/WEB-INF/accounts/register.html">register</a>
+        <form method="post" action="lobby/makeRoom">
+            Room Name : <input type="text" name="roomName"><br />
+            <input type="submit" value="make">
+        </form>
     </body>
 </html>
