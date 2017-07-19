@@ -13,76 +13,78 @@
     // Header -----------------------------------------------
     global.Draw = Draw;
     global.Draw.draw = draw;
-    global.Draw.BOARD_SIZE = BOARD_SIZE;
+    global.Draw.BOARD = BOARD;
     global.Draw.CELL_SIZE = CELL_SIZE;
     //-------------------------------------
 
-    var COLUMN = 8; // 行数(列数)
-    var BOARD_SIZE = {// オセロ盤の表示サイズ
-        x: 100,
-        y: 100,
-        w: 500,
-        h: 500
+    var COLUMN = 8; // オセロ盤の行数(列数)
+    var BOARD = {// オセロ盤の表示サイズ
+        x: 0,
+        y: 0,
+        w: 400,
+        h: 400
     };
 
-    var CELL_SIZE = BOARD_SIZE.w / COLUMN; // 1マスのサイズ
+    var CELL_SIZE = BOARD.w / COLUMN |0; // 1マスのサイズ
 
     var BOARD_COLOR = "#03a803 "; // オセロ盤の色
-    var LINE_COLOR = "#000000"; // 罫線の色
-
-    var COLOR_WHITE = "#FFFFFF";
-    var COLOR_BLACK = "#000000";
-    var COLOR_SELECT = "#FFFFFF";
-
-    var COLOR_PANEL_4 = "#006400 ";
-    var COLOR_PANEL_5 = "#03a803 ";
-    var COLOR_PANEL_6 = "#04cb04";
-
-    var state_cache = null;
-    var prev_revision = -1;
-    var canvasElements = {
+    var WHITE = "#FFFFFF";
+    var BLACK = "#000000";
+    
+    var prevMoveCnt = -1;
+    var canvasElements = { // canvas内の図形
         board: null,
         stones: null,
         effect: null
     };
 
+    /*
+     * オセロ盤と石を描画する
+     * @param {type} ctx
+     * @param {type} state
+     * @param {type} point
+     * @returns {undefined}
+     */
     function draw(ctx, state, point) {
-        if (prev_revision < 0) {
+        if (prevMoveCnt < 0) {
             canvasElements.board = drawBoard(state);
             canvasElements.stones = drawStones(state);
             canvasElements.effect = drawEffect(state);
-            Draw.BOARD_SIZE = BOARD_SIZE;
+            Draw.BOARD = BOARD;
             Draw.CELL_SIZE = CELL_SIZE;
         } else {
-            if (state.revision !== prev_revision) {
+            if (state.moveCnt !== prevMoveCnt) {
                 canvasElements.stones = drawStones(state);
             }
             canvasElements.effect = drawEffect(state, point);
         }
 
-        ctx.clearRect(0, 0, BOARD_SIZE.w, BOARD_SIZE.h);
-        ctx.drawImage(canvasElements.board, 0, 0, BOARD_SIZE.w, BOARD_SIZE.h);
-        ctx.drawImage(canvasElements.stones, 0, 0, BOARD_SIZE.w, BOARD_SIZE.h);
-        ctx.drawImage(canvasElements.effect, 0, 0, BOARD_SIZE.w, BOARD_SIZE.h);
-        prev_revision = state.revision;
+        ctx.clearRect(0, 0, BOARD.w, BOARD.h); // リフレッシュ
+        ctx.drawImage(canvasElements.board, 0, 0, BOARD.w, BOARD.h);
+        ctx.drawImage(canvasElements.stones, 0, 0, BOARD.w, BOARD.h);
+        ctx.drawImage(canvasElements.effect, 0, 0, BOARD.w, BOARD.h);
+        prevMoveCnt = state.moveCnt;
     }
 
-    // オセロ盤の描画
+    /*
+     * オセロ盤を描画する
+     * @param {type} state
+     * @returns {drawL#8.canvasElements.board|canvasElements.board}
+     */
     function drawBoard(state) {
         if (canvasElements.board === null) {
             canvasElements.board = document.createElement("canvas");
-            canvasElements.board.width = BOARD_SIZE.w;
-            canvasElements.board.height = BOARD_SIZE.h;
+            canvasElements.board.width = BOARD.w;
+            canvasElements.board.height = BOARD.h;
         }
         var ctx = canvasElements.board.getContext('2d'); // 描画コンテキスト取得
-        ctx.clearRect(0, 0, BOARD_SIZE.w, BOARD_SIZE.h);
-
+        ctx.clearRect(0, 0, BOARD.w, BOARD.h); // リフレッシュ
         ctx.fillStyle = BOARD_COLOR;
 
         // マスの描画
         for (var x = 0; x < COLUMN; x++) {
             for (var y = 0; y < COLUMN; y++) {
-                ctx.strokeStyle = LINE_COLOR;
+                ctx.strokeStyle = BLACK;
                 ctx.beginPath();
                 ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -91,15 +93,20 @@
         return canvasElements.board;
     }
 
-    // 盤面の描画
+    /*
+     * 盤面の描画をする
+     * 個々の石の描画はdrawStone()で行う
+     * @param {type} state
+     * @returns {drawL#8.canvasElements.stones|canvasElements.stones}
+     */
     function drawStones(state) {
         if (canvasElements.stones === null) {
             canvasElements.stones = document.createElement("canvas");
-            canvasElements.stones.width = BOARD_SIZE.w;
-            canvasElements.stones.height = BOARD_SIZE.h;
+            canvasElements.stones.width = BOARD.w;
+            canvasElements.stones.height = BOARD.h;
         }
         var ctx = canvasElements.stones.getContext('2d'); // 描画コンテキスト取得
-        ctx.clearRect(0, 0, BOARD_SIZE.w, BOARD_SIZE.h);
+        ctx.clearRect(0, 0, BOARD.w, BOARD.h);
 
         for (var x = 0; x < COLUMN; x++) {
             for (var y = 0; y < COLUMN; y++) {
@@ -108,61 +115,80 @@
                 }
             }
         }
+        
         return canvasElements.stones;
     }
 
-    // 石の描画
-    function drawStone(ctx, x, y, number) {
-        var fillColor;
+    /*
+     * 石を描画する
+     */
+    function drawStone(ctx, x, y, owner) {
+        var stoneColor; // 石の色
 
-        if (number > 0) {
-            fillColor = COLOR_WHITE;
-        } else if (number < 0) {
-            fillColor = COLOR_BLACK;
+        if (owner > 0) { // ownerが1 => 白
+            stoneColor = WHITE;
+        } else if (owner < 0) { // ownerが-1 => 黒
+            stoneColor = BLACK;
         }
-
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = "rgba(0, 0, 0, 1)";
+        
+        // 影
+        ctx.shadowBlur = 5; // ボカシ
+        ctx.shadowColor = BLACK;
         ctx.shadowOffsetX = 5;
         ctx.shadowOffsetY = 5;
 
-        // 円の描画
+        // 円
         ctx.beginPath();
         ctx.arc(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE / 2 * 0.8, 0, Math.PI * 2, true);
-        ctx.fillStyle = fillColor;
+        ctx.fillStyle = stoneColor;
         ctx.fill();
         ctx.stroke();
-
-        ctx.shadowColor = "#000000";
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
 
         return ctx;
     }
 
+    /*
+     * カーソルが乗っているマスを強調する
+     */
     function drawEffect(state) {
         if (!canvasElements.effect) {
             canvasElements.effect = document.createElement("canvas");
-            canvasElements.effect.width = BOARD_SIZE.w;
-            canvasElements.effect.height = BOARD_SIZE.h;
+            canvasElements.effect.width = BOARD.w;
+            canvasElements.effect.height = BOARD.h;
         }
-        var ctx = canvasElements.effect.getContext('2d');
-        var x = (state.selected.value % COLUMN | 0) * CELL_SIZE;
-        var y = (state.selected.value / COLUMN | 0) * CELL_SIZE;
+        
+        var column = state.selectedCell.column;
+        var row = state.selectedCell.row;
+        
+        if (state.map[column + row * COLUMN] === 0) { // 石が置いていないマスであれば強調
+            var ctx = canvasElements.effect.getContext('2d'); // 描画コンテキストの取得　
+            var x = column * CELL_SIZE;
+            var y = row * CELL_SIZE;
 
-        ctx.clearRect(0, 0, BOARD_SIZE.w, BOARD_SIZE.h);
-        ctx.globalAlpha = 0.5;
-        ctx.fillStyle = COLOR_SELECT;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+            // マスの強調
+            ctx.clearRect(0, 0, BOARD.w, BOARD.h); // リフレッシュ
+            ctx.globalAlpha = 0.5; // 透明度
+            ctx.fillStyle = WHITE;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.fillRect(x, y, CELL_SIZE, CELL_SIZE);
+
+            // 石のプレビュー
+            var stoneColor;
+            if (state.turn > 0) { // 先手(1) => 白
+                stoneColor = WHITE;
+            } else if (state.turn < 0) { // 後手(-1) => 黒
+                stoneColor = BLACK;
+            }
+            ctx.beginPath();
+            ctx.globalAlpha = 0.5; // 透明度
+            ctx.arc(x + CELL_SIZE / 2, y + CELL_SIZE / 2, CELL_SIZE / 2 * 0.8, 0, Math.PI * 2, true);
+            ctx.fillStyle = stoneColor;
+            ctx.fill();
+            ctx.stroke();
+        }
 
         return canvasElements.effect;
-    }
-
-    function objCopy(obj) {
-        return JSON.parse(JSON.stringify(obj));
     }
 
 })((this || 0).self || global);

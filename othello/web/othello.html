@@ -11,37 +11,13 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <canvas id="canv" width="500" height="500"></canvas>
+    <canvas id="canv" width="400" height="400"></canvas>
         <script src="./draw.js"></script>
+        <script src="./game.js"></script>
 
         <script>
-            var point = { // カーソル位置
-                x: 0,
-                y: 0
-            };
-            var init_state = { // 盤面の初期状態 1: 白,  -1: 黒, 0:  空
-                map: [0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0,-1, 1, 0, 0, 0,
-                    0, 0, 0, 1, -1, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0
-                ],
-                mode: 0,
-                turn: 1,
-                revision: 0,
-                selected: {
-                    name: "",
-                    value: 0
-                }
-            };
-            
-            var state = init_state;
-
-            var ctx = document.getElementById("canv").getContext('2d');
-            Draw.draw(ctx, state, point);
+            var ctx = document.getElementById("canv").getContext('2d'); //  描画コンテキストの取得
+            Game.init(ctx);
         </script>
         
     </body>
