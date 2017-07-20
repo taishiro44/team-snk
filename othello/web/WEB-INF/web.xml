@@ -2,38 +2,36 @@
 <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
     <servlet>
         <servlet-name>register</servlet-name>
-        <servlet-class>views.Register</servlet-class>
+        <servlet-class>views.RegisterView</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>register</servlet-name>
-        <url-pattern>/accounts/register</url-pattern>
+        <url-pattern>/register</url-pattern>
     </servlet-mapping>
     
     <servlet>
         <servlet-name>login</servlet-name>
-        <servlet-class>views.Login</servlet-class>
+        <servlet-class>views.LoginView</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>login</servlet-name>
-        <url-pattern>/accounts/login</url-pattern>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
     
     <servlet>
         <servlet-name>lobby</servlet-name>
-        <servlet-class>views.Lobby</servlet-class>
+        <servlet-class>views.LobbyView</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>lobby</servlet-name>
-        <url-pattern>/game/lobby</url-pattern>
+        <url-pattern>/lobby</url-pattern>
     </servlet-mapping>
-    
     <servlet>
-        <servlet-name>room</servlet-name>
-        <servlet-class>views.Room</servlet-class>
+        <servlet-name>makeroom</servlet-name>
+        <servlet-class>views.MakeroomView</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>room</servlet-name>
-        <url-pattern>/game/lobby/makeRoom</url-pattern>
+        <servlet-name>makeroom</servlet-name>
+        <url-pattern>/lobby/makeroom</url-pattern>
     </servlet-mapping>
-    
 </web-app>

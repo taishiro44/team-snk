@@ -41,19 +41,13 @@ public class RoomsModel {
     public Room makeRoom(String roomName){
         Room room = new Room();
         room.setRoomName(roomName);
-        System.out.print("Room ready");
         DBObject room_query = new BasicDBObject("roomName",roomName);
-        System.out.print("51");
         coll.find(room_query);
-        System.out.print("51.5");
         if(coll.find(room_query) != null ){
             System.out.print("RoomNameあるぞ");
         }
-        System.out.print("52");
         room_query.put("state","0");
         coll.insert(room_query);
-        
-        System.out.print("Room OK");
         
         return room;
         /*

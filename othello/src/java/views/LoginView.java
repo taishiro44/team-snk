@@ -6,6 +6,8 @@
 package views;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,16 +18,24 @@ import models.AccountsModel;
  *
  * @author kjaeyun
  */
-public class Register extends HttpServlet {
+public class LoginView extends HttpServlet{
+    
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException{
+        request.getRequestDispatcher("/accounts/login.jsp").forward(request, response);
+    }
+            
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String userid = request.getParameter("userid");
         String userpw = request.getParameter("userpw");
-        String userpw2 = request.getParameter("userpw2");
   
         AccountsModel am = new AccountsModel();
-        am.register(userid, userpw);
+        am.auth(userid, userpw);
         
+        response.sendRedirect("./lobby");
     }
 }

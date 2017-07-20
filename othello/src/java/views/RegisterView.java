@@ -16,18 +16,24 @@ import models.AccountsModel;
  *
  * @author kjaeyun
  */
-public class Login extends HttpServlet{
+public class RegisterView extends HttpServlet {
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.getRequestDispatcher("/accounts/register.jsp").forward(request, response);
+    }
+    
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         String userid = request.getParameter("userid");
         String userpw = request.getParameter("userpw");
+        String userpw2 = request.getParameter("userpw2");
   
+        if (userpw != userpw2)
+            System.out.print("no match pw");
+        
         AccountsModel am = new AccountsModel();
-        am.auth(userid, userpw);
-        
-        
-        response.sendRedirect("../game/lobby.html");
+        am.register(userid, userpw);
+        response.sendRedirect("./lobby");
     }
-    
 }

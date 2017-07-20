@@ -17,15 +17,22 @@ import models.RoomsModel;
  *
  * @author kjaeyun
  */
-public class Room extends HttpServlet{
+public class MakeroomView extends HttpServlet{ 
+    
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException{
+        request.getRequestDispatcher("/game/makeroom.jsp").forward(request, response);
+    }
+    
+    @Override
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.print("50");
         String roomName = request.getParameter("roomName");
   
         RoomsModel rm = new RoomsModel();
         rm.makeRoom(roomName);
-
-        response.sendRedirect("../game.html");
-    }    
+        
+        response.sendRedirect("../lobby");
+    }
 }

@@ -8,10 +8,13 @@ package models;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -25,7 +28,6 @@ public class LobbysModel {
     private DB db;
     private DBCollection coll;
     
-    
     public LobbysModel() {
         try {
             m = new Mongo("localhost", 27017);
@@ -37,5 +39,25 @@ public class LobbysModel {
         }
         coll = db.getCollection(DB_ACCOUNT_COLLECTION);
     }
+    
 
+    public ArrayList getRoomList(){
+        ArrayList<Room> rooms =new ArrayList<Room>();
+        DBObject query = new BasicDBObject();
+        
+        try{
+            DBCursor cursor = coll.find();
+            while(cursor.hasNext()){
+                DBObject object = cursor.next();
+                Room room = new Room();
+                room.setRoomName((String) object.get("roomName"));
+                room.setState((String) object.get("state"));
+                rooms.add(room);
+            }
+        } catch(MongoException e){
+           // throw new TEMFatalException(e);
+        } 
+        return rooms;
+    }
+    
 }
