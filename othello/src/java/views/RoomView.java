@@ -5,26 +5,20 @@
  */
 package views;
 
-import com.mongodb.util.JSON;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import models.AccountsModel;
-import models.LobbysModel;
-import models.RoomsModel;
 
 /**
  *
  * @author kjaeyun
  */
 public class RoomView extends HttpServlet{
-    public void doPost(HttpServletRequest request, HttpServletResponse response)
+    @Override
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        System.out.print("");
+        request.getRequestDispatcher("/game/room.jsp").forward(request, response);
     }    
 }

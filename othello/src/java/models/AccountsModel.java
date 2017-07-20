@@ -8,7 +8,6 @@ package models;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
@@ -38,7 +37,13 @@ public class AccountsModel {
         }
         coll = db.getCollection(DB_ACCOUNT_COLLECTION);
     }
-    
+    public boolean checkUserid(String userId){
+        DBObject account1 = new BasicDBObject();
+        account1.put("userId", userId);
+        
+        DBObject result = coll.findOne(account1);
+        return result == null;
+    }
     public Account register(String userId, String userPw){
         Account account = new Account();
         account.setUserId(userId);
@@ -48,7 +53,7 @@ public class AccountsModel {
         DBObject account1 = new BasicDBObject("userId",userId);
         
         if(coll.findOne(account1) != null ){
-            System.out.print("IDあるぞ");
+            return null;
         }
         account1.put("userPw",userPw);
         coll.insert(account1);
@@ -71,14 +76,12 @@ public class AccountsModel {
         DBObject result = coll.findOne(account1);
         
         if (result == null){
-            System.out.print("not match");
+            return null;
         }else{
-            System.out.print("match");
+            Account account = new Account();
+            account.setUserId(userId);
+            account.setUserPw(userPw);
+            return account;
         }
-        
-        Account account = new Account();
-        account.setUserId(userId);
-        account.setUserPw(userPw);
-        return account;
     }
 }

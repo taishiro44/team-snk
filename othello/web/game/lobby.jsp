@@ -19,11 +19,18 @@
         <form method="get" action="lobby/makeroom">
             <input type="submit" value="New Room"><br />
         </form>
-        Room List:<br /><br />
+        <br />
         <table>
+                <tr>
+                    <td>Title</td>
+                    <td>State</td>
+                    <td>Join</td>
+                </tr>
             <c:forEach var="room" items="${rooms}">
                 <tr>
                     <td>${room.roomName}</td>
+                    <td>${room.state}</td>
+                    <td> <input type="button" value="Join"> </td>
                 </tr>
             </c:forEach>
         </table> 
