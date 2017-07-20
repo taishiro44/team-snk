@@ -15,7 +15,7 @@
         </script>
     </head>
     <body>
-        Welcome to SNK Othello JSP<br />
+        <c:out value="${userid}" /> !, Welcome to SNK Othello JSP<br />
         <form method="get" action="lobby/makeroom">
             <input type="submit" value="New Room"><br />
         </form>
