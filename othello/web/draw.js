@@ -53,9 +53,9 @@
             Draw.BOARD = BOARD;
             Draw.CELL_SIZE = CELL_SIZE;
         } else {
-            if (state.moveCnt !== prevMoveCnt) {
+//            if (state.moveCnt !== prevMoveCnt) {
                 canvasElements.stones = drawStones(state);
-            }
+//            }
             canvasElements.effect = drawEffect(state, point);
         }
 

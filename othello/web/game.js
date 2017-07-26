@@ -14,6 +14,11 @@
     // Header -----------------------------------------------
     global.Game = Game;
     global.Game.init = init;
+    global.Game.getState = getState;
+    global.Game.hoge01 = hoge01;
+    global.Game.hoge02 = hoge02;
+    global.Game.wait = wait;
+    global.Game.connect =connect;
 
     // ------------------------------------------------------
     var COLUMN = 8; // オセロ盤の行数(列数)
@@ -33,18 +38,19 @@
               0, 0, 0, 0, 0, 0, 0, 0,
               0, 0, 0, 0, 0, 0, 0, 0,
               0, 0, 0, 0, 0, 0, 0, 0],
-        turn: 1, // ターン(1:先手, -1:後手)
+        turn: -1, // ターン(1:先手, -1:後手)
         moveCnt: 0, // 総手数
         selectedCell: { // 選択されたセル
             name: "", // 選択オブジェクト
             column: 0,
             row: 0
-        }
+        },
+        str:""
     };
     var winner = null;
     var passCnt = 0;
     
-    
+
     /*
      * ゲームの初期化
      */
@@ -66,7 +72,7 @@
     function onKeyDown(e) {
         var code = e.keyCode;
         
-        if (code === 80) { // Pが押された場合パス
+        if (code === 80 && state.str !== "wait") { // Pが押された場合パス
             state.turn *= -1;
             console.log("pass");
         }
@@ -89,6 +95,11 @@
     function onMouseClick(e) {
         var column, row;
         
+        //自分のターンじゃなければ処理しない
+        if(state.str === "wait"){
+            return;
+        }
+            
         state.selectedCell = fetchCell(point.x, point.y);
         column = state.selectedCell.column;
         row = state.selectedCell.row;
@@ -98,12 +109,13 @@
             Draw.draw(ctx, state, point); // 盤面の更新
             state.turn *= -1; // ターンの交代
             state.moveCnt += 1; // 
+            state.str = "wait";
             
             if (judge()){ // 勝敗がついた場合
                 dispResult(); // 結果を表示する
             }
             
-            
+            send();
         }
     }
 
@@ -287,6 +299,87 @@
     function jsonTest(obj) {
         return JSON.stringify(obj);
     }
+    
+    /**
+     * JSONをオブジェクトに
+     * @returns {undefined}
+     */
+    function parse(obj){
+        return JSON.parse(obj);
+    }
+    
+    /**
+     * サーバーに送るメッセージを
+     */
+    function getState(){
+        var result = JSON.stringify(state);
+        return result;
+    }
+    
+    /**
+     *  対戦相手のターン
+     * @returns {undefined}
+     */
+    function wait(){
+        state.str = "wait";
+    }
+    
+    /**
+     * 名前思いつかん
+     * プレイできる時
+     * @returns {undefined}
+     */
+    function hoge01(){
+        alert("your_turn");
+        state.str = "canPlay";
+    }
+    
+    /**
+     * 名前思いつかんかった
+     * 対戦相手がコマを置いたメッセージを受信した時実行される。
+     * @param {type} s 
+     */
+    function hoge02(s){
+        state = copyObject(s);
+        Draw.draw(ctx, state, point); // 盤面の更新
+    }
+    
+    //ここからwebSocketのための関数
+    var webSocket;
+    function connect(){
+        var ws = new WebSocket("ws://localhost:8080/othello/ws");
+        ws.onmessage = function(message) {
+            var json = JSON.parse(message.data);
+            if(json.state === "wait"){
+//                printMessage("Server : wait");
+                //待機時の処理
+                wait();
+            }else if(json.state === "canPlay"){
+//                printMessage("Server : canPlay");
+                //プレイできる時
+                hoge01();
+            }else if(json.state === "update"){
+//                printMessage("Server : update");
+                //盤面更新する時
+//                printMessage(json.map);
+//                printMessage(json);
+                hoge02(json);
+            }
+        };
+        webSocket = ws;
+//        $("#connect").disabled = true;
+//        $("#send").disabled = false;
+    }
+    function send() {
+        //画面に出力
+//        printMessage("Client : send to Server");
+        //送信の処理
+        var msg = getState();
+        webSocket.send(msg);
+    }
+    
+    
+    
     
 })((this || 0).self || global);
 

@@ -14,11 +14,62 @@ and open the template in the editor.
     <canvas id="canv" width="400" height="400"></canvas>
         <script src="./draw.js"></script>
         <script src="./game.js"></script>
+        
+<!--        <script type="text/javascript">
+            WebSocketDemo = {};
+            (function(d) {
+                function $(query) {
+                    return document.querySelector(query);
+                }
+                function printMessage(msg) {
+                    $("#msgbox").innerHTML += "<div>" + msg + "</div>";
+                }
+                d.connect = function() {
+                    var ws = new WebSocket("ws://localhost:8080/othello/ws");
+                    ws.onmessage = function(message) {
+                        var json = JSON.parse(message.data);
+                        if(json.state === "wait"){
+                            printMessage("Server : wait");
+                            //待機時の処理
+                            Game.wait();
+                        }else if(json.state === "canPlay"){
+                            printMessage("Server : canPlay");
+                            //プレイできる時
+                            Game.hoge01();
+                        }else if(json.state === "update"){
+                            printMessage("Server : update");
+                            //盤面更新する時
+                            printMessage(json.map);
+                            printMessage(json);
+                            Game.hoge02(json);
+                        }
+                    };
+                    d.webSocket = ws;
+                    $("#connect").disabled = true;
+                    $("#send").disabled = false;
+                };
+                d.send = function() {
+                    //画面に出力
+                    printMessage("Client : send to Server");
+                    //送信の処理
+                    var msg = Game.getState();
+                    d.webSocket.send(msg);
+                };
+            }) (WebSocketDemo);
+        </script>-->
 
         <script>
             var ctx = document.getElementById("canv").getContext('2d'); //  描画コンテキストの取得
             Game.init(ctx);
+            Game.connect();
+//            WebSocketDemo.connect(); // サーバと接続
         </script>
         
+        
+<!--        <form action="javascript:void(0);">
+            <input type="button" id="send" value="Send" onclick="WebSocketDemo.send();">
+        </form>-->
+        <!--<div id="msgbox" style="border-style: solid;width: 500px;height: 400px"></div>-->
+
     </body>
 </html>
